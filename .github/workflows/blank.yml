@@ -1,0 +1,62 @@
+name: Appknox
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  appknox:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Find APK
+        id: find_apk
+        shell: bash
+        run: |
+          echo "Searching for APK files..."
+
+          APK=$(find . -type f -name "*.apk" | head -n 1)
+
+          if [ -z "$APK" ]; then
+            echo "ERROR: No APK file found in the repository."
+            exit 1
+          fi
+
+          echo "APK found: $APK"
+          echo "apk_path=$APK" >> "$GITHUB_OUTPUT"
+
+      - name: Appknox Security Scan
+        uses: appknox/appknox-github-action@b7d2bfb2321d5544e97bffcba48557234ab953a4
+        with:
+          appknox_access_token: ${{ secrets.APPKNOX_ACCESS_TOKEN }}
+          file_path: ${{ steps.find_apk.outputs.apk_path }}
+          risk_threshold: MEDIUM
+          sarif: Enable
+
+      - name: Check SARIF Report
+        if: always()
+        shell: bash
+        run: |
+          if [ -f "report.sarif" ]; then
+            echo "SARIF report found."
+          else
+            echo "No SARIF report was generated."
+          fi
+
+      - name: Upload SARIF to GitHub
+        if: always() && hashFiles('report.sarif') != ''
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: report.sarif
+
