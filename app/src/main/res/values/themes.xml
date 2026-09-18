@@ -1,0 +1,7 @@
+<resources>
+    <style name="Theme.BerghofScanner" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/berghof_blue</item>
+        <item name="colorPrimaryDark">@color/berghof_dark</item>
+        <item name="colorAccent">@color/berghof_blue</item>
+    </style>
+</resources>

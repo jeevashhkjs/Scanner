@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Berghof Scanner</string>
+    <string name="accessibility_service_description">Lets Berghof Scanner paste a scanned barcode/QR value directly into the text field you last tapped on, in any app (including a browser showing WebVisu).</string>
+</resources>
